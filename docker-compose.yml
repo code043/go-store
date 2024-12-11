@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  go-store:
+    container_name: go-store
+    image: postgres:12
+    environment:
+      POSTGRES_PASSWORD: dev
+      POSTGRES_USER: postgres
+      POSTGRES_DB: store
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
