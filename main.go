@@ -29,20 +29,34 @@ func main() {
 	//product := Product{"Book", 15.55, true}
 	//pk := insertProduct(db, product)
 	//fmt.Printf("ID = %d\n", pk)
+	data := []Product{}
+	rows, err := db.Query("SELECT name, available, price FROM product")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
 	var name string
 	var price float64
 	var available bool
-	query := "SELECT name, price, available FROM product WHERE id = $1"
-	err = db.QueryRow(query, 111).Scan(&name, &price, &available)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			log.Fatalf("No rows found with ID %d", 111)
+	// query := "SELECT name, price, available FROM product WHERE id = $1"
+	// err = db.QueryRow(query, 111).Scan(&name, &price, &available)
+	// if err != nil {
+	// 	if err == sql.ErrNoRows {
+	// 		log.Fatalf("No rows found with ID %d", 111)
+	// 	}
+	// 	log.Fatal(err)
+	// }
+	// fmt.Printf("Name: %s\n", name)
+	// fmt.Printf("Price: %f\n", price)
+	// fmt.Printf("Available: %t\n", available)
+	for rows.Next() {
+		err := rows.Scan(&name, &price, &available)
+		if err != nil {
+			log.Fatal(err)
 		}
-		log.Fatal(err)
+		data = append(data, Product{name, price, available})
 	}
-	fmt.Printf("Name: %s\n", name)
-	fmt.Printf("Price: %f\n", price)
-	fmt.Printf("Available: %t\n", available)
+	fmt.Println(data)
 
 }
 func createProductTable(db *sql.DB) {
